@@ -6,7 +6,7 @@ import logo from "../../../assets/images/oldlogo.png";
 
 class GenerateBarcode extends Component {
   componentDidMount() {
-    // Store referrer once so it survives page reloads
+    // Store referrer once so it survives page reloads (fallback only)
     if (!sessionStorage.getItem("barcode_referrer")) {
       const ref = document.referrer;
       if (ref) sessionStorage.setItem("barcode_referrer", ref);
@@ -14,8 +14,11 @@ class GenerateBarcode extends Component {
   }
 
   handleBack = () => {
+    const returnUrl = sessionStorage.getItem("admin_return_url");
     const referrer = sessionStorage.getItem("barcode_referrer");
-    if (referrer) {
+    if (returnUrl) {
+      window.location.href = returnUrl;
+    } else if (referrer) {
       window.location.href = referrer;
     } else {
       window.history.back();
@@ -23,7 +26,7 @@ class GenerateBarcode extends Component {
   };
 
   render() {
-    const referrer = sessionStorage.getItem("barcode_referrer") || document.referrer;
+    const referrer = sessionStorage.getItem("admin_return_url") || sessionStorage.getItem("barcode_referrer") || document.referrer;
 
     return (
       <div style={{ minHeight: "100vh", background: "#f0f2f5", fontFamily: "Inter, Arial, sans-serif" }}>

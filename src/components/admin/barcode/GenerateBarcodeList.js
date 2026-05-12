@@ -51,6 +51,9 @@ class GenerateBarcodeList extends Component {
         const items = formatItems(event.data.data || []);
         this.setState({ items, barcodes: items, loading: false });
         sessionStorage.setItem("barcode_data", JSON.stringify(event.data.data));
+        if (event.data.returnUrl) {
+          sessionStorage.setItem("admin_return_url", event.data.returnUrl);
+        }
       }
     };
     window.addEventListener("message", this.messageHandler);
