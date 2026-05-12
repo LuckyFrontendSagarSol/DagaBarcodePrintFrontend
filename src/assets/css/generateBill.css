@@ -1,0 +1,25 @@
+/* @media print {
+  @page {
+    size: 72mm 3276mm !important;
+    margin: 10px 3px !important;
+  }
+  .generate-bill-m {
+    margin-right: 5%;
+  }
+  .generate-bill {
+    margin-right: 15%;
+  }
+  .bill-head {
+    font-size: small;
+  }
+}
+.generate-bill-m {
+  margin-right: 5%;
+}
+.generate-bill {
+  margin-right: 15%;
+}
+
+.bill-head {
+  font-size: small;
+} */

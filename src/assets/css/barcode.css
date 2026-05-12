@@ -1,0 +1,159 @@
+@media print {
+  @page barcode_size {
+    /* margin: 0% !important; */
+    size: 110mm 25mm !important;
+  }
+
+  .my-barcodes {
+    page: barcode_size;
+    display: grid !important;
+    grid-template-columns: 3fr 3fr !important;
+    width: 110mm !important;
+    height: 25mm;
+    margin-top: 1px !important;
+    margin-bottom: 0 !important;
+    margin-left: 1px !important;
+    grid-auto-rows: minmax(141px, auto);
+    /* padding: 10px 200px 60px 200px;
+    margin-bottom: 100px; */
+  }
+  .box-barcode {
+    width: 6cm !important;
+    /* border: 1px solid black; */
+    /* margin-bottom: -10px !important; */
+    /* ma rgin-right: 70px !important;
+    margin-top: 5px !important;*/
+    margin-left: -5px !important; 
+    /*height: 2.5cm; */
+    /* flex-grow: 3 !important; */
+    /* margin-bottom: 40% !important; */
+    /* width: 600px !important; */
+  }
+  .box-barcode .code-col {
+    margin: 0% !important;
+    margin-bottom: 0% !important;
+    margin-left: 5%;
+  }
+  .box-barcode .code-row {
+    margin-top: 0% !important;
+    margin-bottom: 0% !important;
+    transform: scale(0.999, 1.25);
+  }
+  .box-barcode .code {
+    margin-bottom: -0.25% !important;
+    margin-top: -2.5% !important;
+    transform: scale(1.5);
+    margin-left: -10%;
+    font-weight: bolder !important;
+  }
+  /* .code h4 {
+    margin-left: -10%;
+  } */
+
+  .box-barcode p {
+    /* margin-bottom: -10px !important; */
+    font-size: 15px;
+    font-weight: bolder !important;
+  }
+  .box-barcode .code-row-one {
+    margin-bottom: -1.5% !important;
+    /* margin-top: -10px !important; */
+    font-size: 15px;
+    transform: scale(0.999, 1.65);
+  }
+  .box-barcode h6 {
+    font-weight: bolder !important;
+  }
+  .box-barcode h5 {
+    font-weight: bolder !important;
+    /* margin-bottom: -4% !important; */
+  }
+  .box-barcode h3 {
+    margin-bottom: -2% !important;
+    margin-top: -8% !important;
+
+    font-weight: bolder !important;
+  }
+  .box-barcode .barcode-number {
+    margin-top: 0.5%;
+  }
+}
+.my-barcodes {
+  page: barcode_size;
+  display: grid !important;
+  grid-template-columns: 3fr 3fr !important;
+  width: 110mm !important;
+  height: 25mm;
+  margin-top: 1px !important;
+  margin-bottom: 0 !important;
+  grid-auto-rows: minmax(142px, auto);
+  /* padding: 10px 200px 60px 200px;
+  margin-bottom: 100px; */
+}
+.box-barcode {
+  width: 6cm;
+  /* border: 1px solid black; */
+  /* margin-bottom: -10px !important; */
+  /* margin-right: 70px !important;
+  margin-top: 5px !important;
+  margin-left: 15px !important; */
+  /*height: 2.5cm; */
+  /* flex-grow: 3 !important; */
+  /* margin-bottom: 40% !important; */
+  /* width: 600px !important; */
+}
+.box-barcode .code-col {
+  margin: 0% !important;
+  margin-bottom: 0% !important;
+  margin-left: 5%;
+}
+.box-barcode .code-row {
+  margin-top: 0% !important;
+  margin-bottom: 0% !important;
+  transform: scale(0.999, 1.25);
+}
+.box-barcode .code {
+  margin-bottom: -0.25% !important;
+  margin-top: -2% !important;
+  transform: scale(1.5);
+  margin-left: -10%;
+  font-weight: bolder !important;
+}
+/* .code h4 {
+  margin-left: -10%;
+} */
+
+.box-barcode p {
+  /* margin-bottom: -10px !important; */
+  font-size: 15px;
+  font-weight: bolder !important;
+}
+.box-barcode .code-row-one {
+  margin-bottom: -1.5% !important;
+  /* padding-right: 0px !important; */
+  /* margin-top: -10px !important; */
+  font-size: 15px;
+  transform: scale(0.999, 1.5);
+}
+.box-barcode h6 {
+  font-weight: bolder !important;
+}
+.box-barcode h5 {
+  font-weight: bolder !important;
+  /* margin-bottom: -4% !important; */
+}
+.box-barcode h3 {
+  margin-bottom: -2% !important;
+  margin-top: -8% !important;
+
+  font-weight: bolder !important;
+}
+.box-barcode .barcode-number {
+  margin-top: 0.5%;
+}
+
+.barcode-card .card-body {
+  flex: 1 1 auto;
+  min-height: 1px;
+  padding: 20px 0px 0px 0px !important;
+}
