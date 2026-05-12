@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { Table, Button, Space, Input, Tag, Row, Col } from "antd";
-import { SearchOutlined, BarcodeOutlined, CheckSquareOutlined, UnorderedListOutlined } from "@ant-design/icons";
+import { Table, Button, Space, Input, Tag, Row, Col, Spin, Empty, Result } from "antd";
+import { SearchOutlined, BarcodeOutlined, CheckSquareOutlined, UnorderedListOutlined, LoadingOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 import AddGenerateBarcode from "./AddGenerateBarcode";
 import { BarcodeData } from "../../../util/constants";
@@ -17,39 +17,47 @@ class GenerateBarcodeList extends Component {
     super(props);
     this.state = {
       items: fallbackItems,
-      barcodes: fallbackItems, // all selected by default
+      barcodes: fallbackItems,
       searchText: "",
       searchedColumn: "",
+      loading: !!window.opener, // show loader only if opened from another tab
     };
   }
 
   componentDidMount() {
-    // Signal to the opener tab that this page is ready to receive data
-    if (window.opener) {
-      window.opener.postMessage("READY_FOR_BARCODES", "*");
+    // Restore from sessionStorage on reload
+    const sessionRaw = sessionStorage.getItem("barcode_data");
+    if (sessionRaw) {
+      try {
+        const items = formatItems(JSON.parse(sessionRaw));
+        this.setState({ items, barcodes: items, loading: false });
+        return;
+      } catch (_) {}
     }
 
-    // Listen for barcode data sent via postMessage
+    // Signal opener we are ready
+    if (window.opener) {
+      window.opener.postMessage("READY_FOR_BARCODES", "*");
+      // Fallback: if no data arrives in 5s, use constant data
+      this.loadingTimer = setTimeout(() => {
+        this.setState({ loading: false });
+      }, 5000);
+    }
+
     this.messageHandler = (event) => {
       if (event.data?.type === "BARCODE_DATA") {
-        const items = formatItems(event.data.data);
-        this.setState({ items, barcodes: items });
-        // Save to sessionStorage so reload works
+        clearTimeout(this.loadingTimer);
+        const items = formatItems(event.data.data || []);
+        this.setState({ items, barcodes: items, loading: false });
         sessionStorage.setItem("barcode_data", JSON.stringify(event.data.data));
       }
     };
     window.addEventListener("message", this.messageHandler);
-
-    // Handle page reload — restore from sessionStorage
-    const sessionRaw = sessionStorage.getItem("barcode_data");
-    if (sessionRaw) {
-      const items = formatItems(JSON.parse(sessionRaw));
-      this.setState({ items, barcodes: items });
-    }
   }
 
   componentWillUnmount() {
     window.removeEventListener("message", this.messageHandler);
+    clearTimeout(this.loadingTimer);
   }
 
   getColumnSearchProps = (dataIndex) => ({
@@ -122,8 +130,17 @@ class GenerateBarcodeList extends Component {
   };
 
   render() {
-    const { barcodes, items } = this.state;
+    const { barcodes, items, loading } = this.state;
     const selectedCount = barcodes.length;
+
+    if (loading) {
+      return (
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: 320, gap: 16 }}>
+          <Spin indicator={<LoadingOutlined style={{ fontSize: 40, color: "#1890ff" }} spin />} />
+          <div style={{ color: "#888", fontSize: 14 }}>Loading barcode data...</div>
+        </div>
+      );
+    }
 
     const rowSelection = {
       selectedRowKeys: barcodes.map((b) => b.key),
