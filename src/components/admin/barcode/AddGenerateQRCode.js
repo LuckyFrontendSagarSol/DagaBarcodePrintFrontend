@@ -72,7 +72,7 @@ export default class AddGenerateQRCode extends Component {
         <Col key={`${barcode.barcode}-${bi}`} sm={24} md={12} lg={12} xl={12}>
           <div
             className="box-qr"
-            style={{ marginRight: 85, marginLeft: 15, marginTop: -15, flexGrow: 3 }}
+            style={{ marginRight: 85, marginLeft: 15, marginTop: 4, flexGrow: 3 }}
           >
             {/* Same layout structure as barcode label but QR replaces the barcode strip */}
             <div style={{ display: "flex", alignItems: "flex-start", height: "100%" }}>
