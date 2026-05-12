@@ -26,37 +26,47 @@ class GenerateBarcodeList extends Component {
   }
 
   componentDidMount() {
-    // Restore from sessionStorage on reload
-    const sessionRaw = sessionStorage.getItem("barcode_data");
-    if (sessionRaw) {
-      try {
-        const items = formatItems(JSON.parse(sessionRaw));
-        this.setState({ items, barcodes: items, loading: false });
-        return;
-      } catch (_) { }
-    }
-
-    // Signal opener we are ready
     if (window.opener) {
+      // Opened from admin — always request fresh data, never use stale sessionStorage
       window.opener.postMessage("READY_FOR_BARCODES", "*");
-      // Fallback: if no data arrives in 5s, use constant data
+
+      // Fallback: if no data arrives in 5s, fall back to sessionStorage then constants
       this.loadingTimer = setTimeout(() => {
+        const sessionRaw = sessionStorage.getItem("barcode_data");
+        if (sessionRaw) {
+          try {
+            const items = formatItems(JSON.parse(sessionRaw));
+            this.setState({ items, barcodes: items, loading: false });
+            return;
+          } catch (_) { }
+        }
         this.setState({ loading: false });
       }, 5000);
-    }
 
-    this.messageHandler = (event) => {
-      if (event.data?.type === "BARCODE_DATA") {
-        clearTimeout(this.loadingTimer);
-        const items = formatItems(event.data.data || []);
-        this.setState({ items, barcodes: items, loading: false });
-        sessionStorage.setItem("barcode_data", JSON.stringify(event.data.data));
-        if (event.data.returnUrl) {
-          sessionStorage.setItem("admin_return_url", event.data.returnUrl);
+      this.messageHandler = (event) => {
+        if (event.data?.type === "BARCODE_DATA") {
+          clearTimeout(this.loadingTimer);
+          const items = formatItems(event.data.data || []);
+          this.setState({ items, barcodes: items, loading: false });
+          sessionStorage.setItem("barcode_data", JSON.stringify(event.data.data));
+          if (event.data.returnUrl) {
+            sessionStorage.setItem("admin_return_url", event.data.returnUrl);
+          }
         }
+      };
+      window.addEventListener("message", this.messageHandler);
+    } else {
+      // Accessed directly (reload / bookmark) — restore from sessionStorage
+      const sessionRaw = sessionStorage.getItem("barcode_data");
+      if (sessionRaw) {
+        try {
+          const items = formatItems(JSON.parse(sessionRaw));
+          this.setState({ items, barcodes: items, loading: false });
+          return;
+        } catch (_) { }
       }
-    };
-    window.addEventListener("message", this.messageHandler);
+      this.setState({ loading: false });
+    }
   }
 
   componentWillUnmount() {
