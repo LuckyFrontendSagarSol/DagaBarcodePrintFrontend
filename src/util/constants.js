@@ -19,7 +19,7 @@ export const BarcodeData = [
             "designNumber": "2004 FOURWAY",
             "brand": "SAFAYER",
             "size": "90",
-            "MOQ": 3,
+            "MOQ": 8,
             "color": "Blue",
             "wsp": 179,
             "quantity": 6,
@@ -46,7 +46,6 @@ export const BarcodeData = [
             "MOQ": 3,
             "size": "9 XL",
             "wsp": 179,
-            "quantity": 16,
             "barcode": 100331128,
             "__v": 0
         },

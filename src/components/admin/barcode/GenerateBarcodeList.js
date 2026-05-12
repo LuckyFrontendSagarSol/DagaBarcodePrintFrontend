@@ -7,19 +7,49 @@ import { BarcodeData } from "../../../util/constants";
 
 const { Column } = Table;
 
-const allItems = (BarcodeData[0] || []).map((item, idx) => ({
-  ...item,
-  key: `${item.barcode}-${idx}`,
-}));
+const formatItems = (arr) =>
+  arr.map((item, idx) => ({ ...item, key: `${item.barcode}-${idx}` }));
+
+const fallbackItems = formatItems(BarcodeData[0] || []);
 
 class GenerateBarcodeList extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      barcodes: [],
+      items: fallbackItems,
+      barcodes: fallbackItems, // all selected by default
       searchText: "",
       searchedColumn: "",
     };
+  }
+
+  componentDidMount() {
+    // Signal to the opener tab that this page is ready to receive data
+    if (window.opener) {
+      window.opener.postMessage("READY_FOR_BARCODES", "*");
+    }
+
+    // Listen for barcode data sent via postMessage
+    this.messageHandler = (event) => {
+      if (event.data?.type === "BARCODE_DATA") {
+        const items = formatItems(event.data.data);
+        this.setState({ items, barcodes: items });
+        // Save to sessionStorage so reload works
+        sessionStorage.setItem("barcode_data", JSON.stringify(event.data.data));
+      }
+    };
+    window.addEventListener("message", this.messageHandler);
+
+    // Handle page reload — restore from sessionStorage
+    const sessionRaw = sessionStorage.getItem("barcode_data");
+    if (sessionRaw) {
+      const items = formatItems(JSON.parse(sessionRaw));
+      this.setState({ items, barcodes: items });
+    }
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("message", this.messageHandler);
   }
 
   getColumnSearchProps = (dataIndex) => ({
@@ -92,7 +122,7 @@ class GenerateBarcodeList extends Component {
   };
 
   render() {
-    const { barcodes } = this.state;
+    const { barcodes, items } = this.state;
     const selectedCount = barcodes.length;
 
     const rowSelection = {
@@ -115,7 +145,7 @@ class GenerateBarcodeList extends Component {
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <UnorderedListOutlined style={{ color: "#1890ff", fontSize: 16 }} />
                 <span style={{ color: "#555", fontSize: 13 }}>
-                  Total Items: <strong style={{ color: "#1890ff" }}>{allItems.length}</strong>
+                  Total Items: <strong style={{ color: "#1890ff" }}>{items.length}</strong>
                 </span>
               </div>
             </Col>
@@ -140,7 +170,7 @@ class GenerateBarcodeList extends Component {
         {/* Table */}
         <div style={{ padding: "0 0 16px 0" }}>
           <Table
-            dataSource={allItems}
+            dataSource={items}
             rowSelection={rowSelection}
             bordered={false}
             size="middle"
