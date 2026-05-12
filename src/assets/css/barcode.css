@@ -157,3 +157,83 @@
   min-height: 1px;
   padding: 20px 0px 0px 0px !important;
 }
+
+/* QR label — mirrors barcode label dimensions exactly */
+.box-qr {
+  width: 6cm;
+}
+.box-qr h3 {
+  margin-bottom: -10% !important;
+  margin-top: 0% !important;
+  font-weight: bolder !important;
+  font-size: 13px !important;
+}
+.box-qr .code-row-one {
+  margin-bottom: -1.5% !important;
+  font-size: 12px;
+  transform: scale(0.999, 1.5);
+}
+.box-qr .code-row {
+  margin-top: -5% !important;
+  margin-bottom: 0% !important;
+  transform: scale(0.999, 1.25);
+}
+.box-qr p {
+  font-size: 12px;
+  font-weight: bolder !important;
+}
+.box-qr .code {
+  margin-bottom: -7.25% !important;
+  margin-top: -6% !important;
+  margin-left: -10%;
+  font-weight: bolder !important;
+  font-size: 11px !important;
+}
+.box-qr h5 {
+  font-weight: bolder !important;
+  font-size: 10px !important;
+}
+.box-qr .barcode-number {
+  margin-top: 0.5%;
+}
+
+@media print {
+  .box-qr {
+    width: 6cm !important;
+    margin-left: -5px !important;
+  }
+  .box-qr h3 {
+    margin-bottom: -2% !important;
+    margin-top: -8% !important;
+    font-weight: bolder !important;
+    font-size: 13px !important;
+  }
+  .box-qr .code-row-one {
+    margin-bottom: -1.5% !important;
+    font-size: 12px;
+    transform: scale(0.999, 1.65);
+  }
+  .box-qr .code-row {
+    margin-top: -5% !important;
+    margin-bottom: 0% !important;
+    transform: scale(0.999, 1.25);
+  }
+  .box-qr p {
+    font-size: 12px;
+    font-weight: bolder !important;
+  }
+  .box-qr .code {
+    margin-bottom: -0.25% !important;
+    margin-top: -2.5% !important;
+    margin-left: -10%;
+    font-weight: bolder !important;
+    font-size: 11px !important;
+  }
+  .box-qr h5 {
+    font-weight: bolder !important;
+    font-size: 10px !important;
+  }
+  .box-qr .barcode-number {
+    margin-top: 0.5%;
+  }
+}

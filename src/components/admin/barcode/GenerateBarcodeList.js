@@ -3,6 +3,7 @@ import { Table, Button, Space, Input, Tag, Row, Col, Spin, Empty, Result } from 
 import { SearchOutlined, BarcodeOutlined, CheckSquareOutlined, UnorderedListOutlined, LoadingOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 import AddGenerateBarcode from "./AddGenerateBarcode";
+import AddGenerateQRCode from "./AddGenerateQRCode";
 import { BarcodeData } from "../../../util/constants";
 
 const { Column } = Table;
@@ -281,7 +282,10 @@ class GenerateBarcodeList extends Component {
               ? `${selectedCount} item${selectedCount > 1 ? "s" : ""} selected — click Generate to proceed`
               : "Select items from the table to generate barcodes"}
           </span>
-          <AddGenerateBarcode barcodes={barcodes} clearState={this.clearState} />
+          <div style={{ display: "flex", gap: 10 }}>
+            <AddGenerateBarcode barcodes={barcodes} clearState={this.clearState} />
+            <AddGenerateQRCode barcodes={barcodes} clearState={this.clearState} />
+          </div>
         </div>
       </div>
     );
