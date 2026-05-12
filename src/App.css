@@ -9,8 +9,6 @@ Date              created by               Modifications
 */
 /* /////////////////////////////////////// */
 
-@import "~react-image-gallery/styles/css/image-gallery.css";
-
 /* --------------------------------|| Tailwind Import ||----------------------- */
 @tailwind base;
 @tailwind components;

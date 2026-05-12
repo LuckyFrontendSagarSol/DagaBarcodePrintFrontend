@@ -71,7 +71,7 @@ export const addToCart = ({
       const customToast = (
         <div style={{ display: "flex", alignItems: "center" }}>
           <img
-            src={process?.env?.PUBLIC_URL + item?.image[0]}
+            src={process.env.PUBLIC_URL + item?.image[0]}
             alt="Your Image"
             style={{ width: "80px", height: "80px", marginRight: "10px" }}
           />
