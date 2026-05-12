@@ -32,7 +32,7 @@ class GenerateBarcodeList extends Component {
         const items = formatItems(JSON.parse(sessionRaw));
         this.setState({ items, barcodes: items, loading: false });
         return;
-      } catch (_) {}
+      } catch (_) { }
     }
 
     // Signal opener we are ready
@@ -131,6 +131,7 @@ class GenerateBarcodeList extends Component {
 
   render() {
     const { barcodes, items, loading } = this.state;
+    console.log("Waiting for barcode data from opener...", items);
     const selectedCount = barcodes.length;
 
     if (loading) {
@@ -142,11 +143,16 @@ class GenerateBarcodeList extends Component {
       );
     }
 
+    const isPurchaseMode = items.length > 0 && items.some((i) => i.isPurchase);
+
     const rowSelection = {
       selectedRowKeys: barcodes.map((b) => b.key),
       onChange: (_, selectedRows) => {
         this.setState({ barcodes: selectedRows });
       },
+      getCheckboxProps: (record) => ({
+        disabled: !!record.isPurchase,
+      }),
     };
 
     return (
@@ -166,18 +172,29 @@ class GenerateBarcodeList extends Component {
                 </span>
               </div>
             </Col>
-            <Col>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <CheckSquareOutlined style={{ color: "#52c41a", fontSize: 16 }} />
-                <span style={{ color: "#555", fontSize: 13 }}>
-                  Selected: <strong style={{ color: "#52c41a" }}>{selectedCount}</strong>
-                </span>
-              </div>
-            </Col>
-            {selectedCount > 0 && (
+            {!isPurchaseMode && (
+              <>
+                <Col>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <CheckSquareOutlined style={{ color: "#52c41a", fontSize: 16 }} />
+                    <span style={{ color: "#555", fontSize: 13 }}>
+                      Selected: <strong style={{ color: "#52c41a" }}>{selectedCount}</strong>
+                    </span>
+                  </div>
+                </Col>
+                {selectedCount > 0 && (
+                  <Col>
+                    <Tag color="blue" icon={<BarcodeOutlined />}>
+                      {selectedCount} barcode{selectedCount > 1 ? "s" : ""} ready to generate
+                    </Tag>
+                  </Col>
+                )}
+              </>
+            )}
+            {isPurchaseMode && (
               <Col>
-                <Tag color="blue" icon={<BarcodeOutlined />}>
-                  {selectedCount} barcode{selectedCount > 1 ? "s" : ""} ready to generate
+                <Tag color="purple" icon={<BarcodeOutlined />}>
+                  Purchase Order — {items.length} item{items.length > 1 ? "s" : ""}
                 </Tag>
               </Col>
             )}
@@ -276,12 +293,36 @@ class GenerateBarcodeList extends Component {
           alignItems: "center",
           justifyContent: "space-between",
         }}>
-          <span style={{ color: "#888", fontSize: 12 }}>
-            {selectedCount > 0
-              ? `${selectedCount} item${selectedCount > 1 ? "s" : ""} selected — click Generate to proceed`
-              : "Select items from the table to generate barcodes"}
-          </span>
-          <AddGenerateBarcode barcodes={barcodes} clearState={this.clearState} />
+          {isPurchaseMode ? (
+            <>
+              <span style={{ color: "#888", fontSize: 12 }}>
+                Purchase order — barcodes are auto-calculated from quantity &amp; MOQ
+              </span>
+              <Space>
+                <AddGenerateBarcode
+                  barcodes={items}
+                  mode="generate"
+                  buttonLabel="Generate Barcode"
+                  clearState={this.clearState}
+                />
+                <AddGenerateBarcode
+                  barcodes={items}
+                  mode="sample"
+                  buttonLabel="Sample Barcode"
+                  clearState={this.clearState}
+                />
+              </Space>
+            </>
+          ) : (
+            <>
+              <span style={{ color: "#888", fontSize: 12 }}>
+                {selectedCount > 0
+                  ? `${selectedCount} item${selectedCount > 1 ? "s" : ""} selected — click Generate to proceed`
+                  : "Select items from the table to generate barcodes"}
+              </span>
+              <AddGenerateBarcode barcodes={barcodes} clearState={this.clearState} />
+            </>
+          )}
         </div>
       </div>
     );

@@ -51,8 +51,55 @@ export default class AddGenerateBarcode extends Component {
     return true;
   }
 
+  // Expand barcodes array based on mode:
+  // 'generate' → repeat each item (quantity/MOQ - sampleCount) times
+  // 'sample'   → emit {barcode}-w × (sampleCount*MOQ - sampleCount) and {barcode}-s × sampleCount
+  // 'manual'   → handled via totalCount input (legacy)
+  buildExpandedBarcodes(barcodes, mode, totalCount) {
+    if (mode === "generate") {
+      const result = [];
+      barcodes.forEach((item) => {
+        const bundles = Math.floor((item.quantity || 0) / (item.MOQ || 1));
+        const sampleCount = item.sampleBarcodeObj ? item.sampleBarcodeObj.sampleCount : 0;
+        const count = Math.max(0, bundles - sampleCount);
+        for (let i = 0; i < count; i++) result.push(item);
+      });
+      return result;
+    }
+
+    if (mode === "sample") {
+      const result = [];
+      barcodes.forEach((item) => {
+        if (!item.sampleBarcodeObj) return;
+        const { sampleCount } = item.sampleBarcodeObj;
+        const moq = item.MOQ || 1;
+        const qty = item.quantity || 0;
+        const perBucket = qty < sampleCount * moq
+          ? Math.floor(qty / moq)
+          : sampleCount;
+        const wCount = perBucket;
+        const sCount = perBucket;
+        for (let i = 0; i < wCount; i++)
+          result.push({ ...item, barcode: `${item.barcode}-w` });
+        for (let i = 0; i < sCount; i++)
+          result.push({ ...item, barcode: `${item.barcode}-s` });
+      });
+      return result;
+    }
+
+    // manual mode — repeat each barcode totalCount times
+    const count = Number(totalCount || 0);
+    const result = [];
+    barcodes.forEach((item) => {
+      for (let i = 0; i < count; i++) result.push(item);
+    });
+    return result;
+  }
+
   render() {
     const { visible, totalCount, barcodes } = this.state;
+    const { mode = "manual", buttonLabel } = this.props;
+    const isAutoMode = mode === "generate" || mode === "sample";
 
     const out = (() => {
       const createdAt = barcodes?.[0]?.created_at;
@@ -64,9 +111,11 @@ export default class AddGenerateBarcode extends Component {
       return `${month}${String(year).slice(-2)}`;
     })();
 
-    const barcodeRows = barcodes?.map((barcode, bi) => {
+    const expandedBarcodes = this.buildExpandedBarcodes(barcodes, mode, totalCount);
+
+    const barcodeRows = expandedBarcodes.map((barcode, bi) => {
       if (!barcode) return null;
-      const data = (
+      return (
         <Col key={`${barcode.barcode}-${bi}`} sm={24} md={12} lg={12} xl={12}>
           <div
             className="box-barcode"
@@ -112,52 +161,62 @@ export default class AddGenerateBarcode extends Component {
           </div>
         </Col>
       );
-      return Array(Number(totalCount || 0)).fill(data);
     });
 
-    const isPrintDisabled = !totalCount || Number(totalCount) === 0;
+    const isPrintDisabled = isAutoMode
+      ? expandedBarcodes.length === 0
+      : !totalCount || Number(totalCount) === 0;
+
+    const modalTitle = mode === "sample" ? "Sample Barcode" : "Generate Barcode";
 
     return (
-      <div className="barcode-generator">
+      <div className="barcode-generator" style={{ display: "inline-block" }}>
         <Button
           type="primary"
           icon={<PrinterOutlined />}
           onClick={this.showModal}
           disabled={!this.props.barcodes?.length}
         >
-          Generate
+          {buttonLabel || "Generate"}
         </Button>
 
         <Modal
           open={visible}
           onCancel={this.handleModalCancel}
-          title="Generate Barcode"
+          title={modalTitle}
           style={{ top: 20 }}
           footer={null}
           destroyOnClose
           width={1500}
         >
           <div>
-            <Form name="barcode-form" initialValues={{ remember: true }}>
-              <Form.Item name="totalCount">
-                <Input
-                  placeholder="Enter number of copies per barcode"
-                  name="totalCount"
-                  type="number"
-                  min={1}
-                  value={totalCount}
-                  onChange={this.onChange}
-                />
-              </Form.Item>
-            </Form>
+            {!isAutoMode && (
+              <Form name="barcode-form" initialValues={{ remember: true }}>
+                <Form.Item name="totalCount">
+                  <Input
+                    placeholder="Enter number of copies per barcode"
+                    name="totalCount"
+                    type="number"
+                    min={1}
+                    value={totalCount}
+                    onChange={this.onChange}
+                  />
+                </Form.Item>
+              </Form>
+            )}
+            {isAutoMode && (
+              <div style={{ marginBottom: 12, color: "#555", fontSize: 13 }}>
+                Total labels to print: <strong>{expandedBarcodes.length}</strong>
+              </div>
+            )}
             <PrintButton contentRef={this.componentRef} disabled={isPrintDisabled} />
           </div>
 
           <div className="card barcode-card">
             <div ref={this.componentRef} className="card-body">
-              {barcodes?.length === 0 ? (
+              {expandedBarcodes.length === 0 ? (
                 <div style={{ textAlign: "center", color: "#999", padding: 40 }}>
-                  No barcodes selected
+                  No barcodes to display
                 </div>
               ) : (
                 <Row gutter={[8, 0]} className="my-barcodes">
