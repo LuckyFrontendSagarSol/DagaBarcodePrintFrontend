@@ -104,7 +104,7 @@ class GenerateBarcodeList extends Component {
         : "",
     onFilterDropdownVisibleChange: (visible) => {
       if (visible) setTimeout(() => this.searchInput.select(), 100);
-    },
+    }, 
     render: (text) =>
       this.state.searchedColumn === dataIndex ? (
         <Highlighter
