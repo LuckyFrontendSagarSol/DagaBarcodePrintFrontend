@@ -3,6 +3,7 @@ import { Table, Button, Space, Input, Tag, Row, Col, Spin, Empty, Result } from 
 import { SearchOutlined, BarcodeOutlined, CheckSquareOutlined, UnorderedListOutlined, LoadingOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 import AddGenerateBarcode from "./AddGenerateBarcode";
+import AddGenerateQRCode from "./AddGenerateQRCode";
 import { BarcodeData } from "../../../util/constants";
 
 const { Column } = Table;
